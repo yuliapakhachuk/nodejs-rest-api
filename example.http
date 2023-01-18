@@ -1,0 +1,39 @@
+###
+GET http://localhost:3000/api/contacts/
+
+
+###
+GET http://localhost:3000/api/contacts/20
+
+
+
+
+###
+POST http://localhost:3000/api/contacts
+content-type: application/json
+
+{
+  {
+  "name": "Yulia",
+  "email": "g@example.com",
+  "phone": "123-234-345"
+  }
+}
+
+
+###
+DELETE http://localhost:3000/api/contacts/21
+
+
+
+###
+PUT http://localhost:3000/api/contacts/13
+content-type: application/json
+
+{
+  {
+    "name": "Yulia",
+    "email": "g@example.com",
+    "phone": "123-234-345"
+  }
+  }

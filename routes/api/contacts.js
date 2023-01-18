@@ -1,7 +1,7 @@
 const express = require('express');
-const { nanoid } = require('nanoid');
 const contacts = require("../../models/contacts")
-// const addContactSchema = require("../../schemas/contacts");
+const addContactSchema = require("../../schemas/contacts");
+const { validateBody } = require("../../middlewares");
 
 const router = express.Router()
 
@@ -21,22 +21,10 @@ router.get('/:contactId', async (req, res, next) => {
   res.json(contact)
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', validateBody(addContactSchema), async (req, res, next) => {
   const { body } = req;
-  const isValid = (body) => {
-    return !Object.keys(body).some(e => e === false);
-  }
-  const isEmpty = (body) => {
-    return !Object.values(body).some(e => e === false);
-  }
-
-  if (!isValid(body) && !isEmpty(body)) {
-    res.status(400).json({error: "missing required name field"})
-  } else {
-    body.id = nanoid();
-    const newContact = await contacts.addContact(body);
-    return res.status(201).json(newContact);
-  }
+  const newContact = await contacts.addContact(body);
+  return res.status(201).json(newContact);
 })
 
 router.delete('/:contactId', async (req, res, next) => {
@@ -52,7 +40,7 @@ router.delete('/:contactId', async (req, res, next) => {
   }
 })
 
-router.put('/:contactId', async (req, res, next) => {
+router.put('/:contactId', validateBody(addContactSchema), async (req, res, next) => {
   const { contactId } = req.params;
   const { body } = req;
   const contact = await contacts.getContactById(contactId);
@@ -62,7 +50,7 @@ router.put('/:contactId', async (req, res, next) => {
     })
   } else {
     await contacts.updateContact(contactId, body);
-    return next(res.status(200).json({ message: `Contact with id ${contactId} was successfully deleted` }));
+    return next(res.status(200).json({ message: `Contact with id ${contactId} was successfully updated` }));
   }
 })
 
