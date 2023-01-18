@@ -13,7 +13,7 @@
     await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   };
 
-  const listContacts = async () => {
+  const getContacts = async () => {
     const contacts = await readContacts();
     return contacts;
   }
@@ -55,7 +55,7 @@
   }
 
   module.exports = {
-    listContacts,
+    getContacts,
     getContactById,
     removeContact,
     addContact,

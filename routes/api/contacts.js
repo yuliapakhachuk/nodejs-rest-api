@@ -6,8 +6,12 @@ const { validateBody } = require("../../middlewares");
 const router = express.Router()
 
 router.get('/', async (req, res, next) => {
-  const contactsList = await contacts.listContacts();
-  res.status(200).json(contactsList);
+  try {
+    const contactsList = await contacts.getContacts();
+    res.status(200).json(contactsList);
+  } catch(error) {
+    next(error);
+  }
 })
 
 router.get('/:contactId', async (req, res, next) => {

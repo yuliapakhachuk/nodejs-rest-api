@@ -1,39 +1,36 @@
+
+//1 - get all contacts:
 ###
 GET http://localhost:3000/api/contacts/
 
-
+//2 - get contact
 ###
-GET http://localhost:3000/api/contacts/20
+GET http://localhost:3000/api/contacts/8
 
-
-
-
+//3 - add new contact
 ###
 POST http://localhost:3000/api/contacts
 content-type: application/json
 
 {
-  {
-  "name": "Yulia",
+  "name": "Oliver",
   "email": "g@example.com",
   "phone": "123-234-345"
-  }
 }
 
 
+//4 - delete contact
 ###
 DELETE http://localhost:3000/api/contacts/21
 
 
-
+//5 - update contact
 ###
-PUT http://localhost:3000/api/contacts/13
+PUT http://localhost:3000/api/contacts/20
 content-type: application/json
 
-{
   {
-    "name": "Yulia",
+    "name": "Max",
     "email": "g@example.com",
     "phone": "123-234-345"
-  }
   }
