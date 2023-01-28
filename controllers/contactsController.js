@@ -20,12 +20,12 @@ const deleteContact = async (req, res, next) => {
     try {
         const contact = await Contact.findByIdAndRemove(contactId);
         if (!contact) {
-        return next(res.status(404).json({ message: "not found" }));
+        return next(res.status(404).json({ message: "Contact was not found" }));
         }
     } catch (error) {
         res.status(500).json({ message: `${error.message}` });
     }
-    return res.status(200).json({ message: "contact deleted" });
+    return res.status(200).json({ message: "Contact successfully deleted" });
 };
 
 const createContact = async (req, res, next) => {
@@ -34,11 +34,11 @@ const createContact = async (req, res, next) => {
     return res.status(201).json(newContact);
 };
 
-const getContact = async (req, res, next) => {
+const getContactById = async (req, res, next) => {
     const { contactId } = req.params;
     const contact = await Contact.findById(contactId);
     if (!contact) {
-        return next(res.status(404).json({ message: "Not found" }));
+        return next(res.status(404).json({ message: "Contact was not found" }));
     }
     return res.json(contact);
 };
@@ -60,9 +60,9 @@ const updateStatusContact = async (req, res, next) => {
 
 module.exports = {
     getContacts,
-    getContact,
-    createContact,
-    deleteContact,
     updateContact,
+    deleteContact,
+    createContact,
+    getContactById,
     updateStatusContact,
 };
