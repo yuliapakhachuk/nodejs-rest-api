@@ -49,9 +49,6 @@ const updateStatusContact = async (req, res, next) => {
     const contact = await Contact.findByIdAndUpdate(contactId, body, {
         new: true,
     });
-    if (!Object.prototype.hasOwnProperty.call(body, "favorite")) {
-        return next(res.status(400).json({ message: "missing field favorite" }));
-    }
     if (!contact) {
         return next(res.status(404).json({ message: "Not found" }));
     }
