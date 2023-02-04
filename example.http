@@ -1,0 +1,45 @@
+###
+POST http://localhost:3000/api/users/register/
+content-type: application/json
+
+{
+    "email": "harryPotter@jj.uk",
+    "password": "qwertyuhg"
+}
+
+
+###
+GET  http://localhost:3000/api/contacts
+
+
+###
+POST http://localhost:3000/api/contacts
+content-type: application/json
+
+{
+    "name": "Harry Potter",
+    "email": "Harry@Nulla.com",
+    "phone": "(000) 398-2828",
+    "favorite": true
+}
+
+
+
+
+
+###
+GET  http://localhost:3000/api/users/logout
+
+
+
+
+
+
+###
+POST http://localhost:3000/api/users/login/
+content-type: application/json
+
+{
+   "email": "harryPotter@jj.uk",
+    "password": "qwertyuhg"
+}
