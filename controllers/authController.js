@@ -1,4 +1,6 @@
 const { User } = require("../models/user");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const jwt = require("jsonwebtoken");
 const { Conflict, Unauthorized } = require("http-errors");
@@ -7,6 +9,8 @@ const bcrypt = require("bcrypt");
 const { JWT_SECRET } = process.env;
 
 const register = async (req, res, next) => {
+  console.log("secret", JWT_SECRET);
+
   const { email, password } = req.body;
   const salt = await bcrypt.genSalt();
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -43,7 +47,6 @@ const login = async (req, res, next) => {
     if (!isPasswordValid || !user) {
       throw new Unauthorized("Email or password is wrong");
     }
-
     const payload = { id: user._id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
 
@@ -62,7 +65,7 @@ const login = async (req, res, next) => {
 const logout = async (req, res) => {
   const { id } = req.user;
   await User.findByIdAndUpdate(id, { token: "" });
-  return res.status(204).end();
+  return res.status(204).json({message: `user ${id} finished session`}).end();
 };
 
 const currentUser = async (req, res) => {

@@ -3,8 +3,8 @@ POST http://localhost:3000/api/users/register/
 content-type: application/json
 
 {
-    "email": "harryPotter@jj.uk",
-    "password": "qwertyuhg"
+    "email": "albus@jj.uk",
+    "password": "12345678"
 }
 
 
@@ -25,6 +25,10 @@ content-type: application/json
 
 
 
+###
+GET http://localhost:3000/api/users/currentUser
+
+
 
 
 ###
@@ -40,6 +44,6 @@ POST http://localhost:3000/api/users/login/
 content-type: application/json
 
 {
-   "email": "harryPotter@jj.uk",
-    "password": "qwertyuhg"
+    "email": "hermiona@jj.uk",
+    "password": "12345678"
 }
