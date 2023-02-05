@@ -9,7 +9,6 @@ const bcrypt = require("bcrypt");
 const { JWT_SECRET } = process.env;
 
 const register = async (req, res, next) => {
-  console.log("secret", JWT_SECRET);
 
   const { email, password } = req.body;
   const salt = await bcrypt.genSalt();
