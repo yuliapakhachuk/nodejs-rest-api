@@ -1,5 +1,7 @@
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const path = require("path");
 const { Unauthorized, BadRequest } = require("http-errors");
 const { User } = require("../models/user.js");
 const { JWT_SECRET } = process.env;
@@ -52,10 +54,26 @@ const auth = async (req, res, next) => {
     next(error);
   }
 };
+
+const multerConfig = multer.diskStorage({
+  function(req, file, cb) {
+    cb(null, path.resolve(__dirname, "tmp"));
+  },
+  filename: function (req, file, cb) {
+    cb(null, Math.random() + file.originalname);
+  },
+});
+
+const upload = multer({
+  storage: multerConfig,
+});
+
+
 module.exports = {
   validateBody,
   addContactSchema,
   updateStatusSchema,
   auth,
   joiRegisterSchema,
+  upload,
 };

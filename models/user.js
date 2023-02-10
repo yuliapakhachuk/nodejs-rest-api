@@ -21,7 +21,10 @@ const schema = Schema(
       token: {
         type: String,
         default: null,
-      }
+      },
+      avatarURL: {
+        type: String,
+      },
   },
   { 
     timetamps: true,

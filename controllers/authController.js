@@ -3,6 +3,11 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const path = require("path");
+const fs = require("fs/promises");
+const Jimp = require("jimp");
+
 const { Conflict, Unauthorized } = require("http-errors");
 const bcrypt = require("bcrypt");
 
@@ -21,12 +26,14 @@ const register = async (req, res, next) => {
     const user = await User.create({
       email,
       password: hashedPassword,
+      avatarURL: gravatar.url(email),
     });
 
     res.status(201).json({
       user: {
         email: user.email,
         subscription: user.subscription,
+        avatarURL: gravatar.url(user.email),
       },
     });
   } catch (error) {
@@ -72,9 +79,39 @@ const currentUser = async (req, res) => {
   const { email, subscription } = user;
   return res.status(200).json({ email, subscription });
 };
+
+const updateAvatar = async (req, res, next) => {
+  const { _id } = req.user;
+  const { path: tmpPath, filename } = req.file;
+
+  try {
+    const newPath = path.resolve(
+      __dirname,
+      "../",
+      "public",
+      "avatars",
+      filename
+    );
+    await fs.rename(tmpPath, newPath);
+    const avatarURL = path.join("avatars", filename);
+    Jimp.read(newPath)
+      .then((avatar) => {
+        return avatar.resize(250, 250).write(newPath); // resize
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    await User.findByIdAndUpdate(_id, { avatarURL: avatarURL });
+    return res.status(200).json({ avatarURL });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   currentUser,
+  updateAvatar,
 };
