@@ -68,6 +68,10 @@ const upload = multer({
   storage: multerConfig,
 });
 
+const resendEmailSchema = Joi.object({
+  email: Joi.string().required(),
+});
+
 
 module.exports = {
   validateBody,
@@ -76,4 +80,5 @@ module.exports = {
   auth,
   joiRegisterSchema,
   upload,
+  resendEmailSchema,
 };

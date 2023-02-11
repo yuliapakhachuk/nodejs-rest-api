@@ -8,17 +8,22 @@ const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
 
-const { Conflict, Unauthorized } = require("http-errors");
+const { v4 } = require("uuid");
+const sendGrid = require("@sendgrid/mail");
+
+const { Conflict, Unauthorized, BadRequest } = require("http-errors");
 const bcrypt = require("bcrypt");
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, SENDGRID_API_KEY } = process.env;
 
 const register = async (req, res, next) => {
 
   const { email, password } = req.body;
+  const verificationToken = v4();
   const salt = await bcrypt.genSalt();
   const hashedPassword = await bcrypt.hash(password, salt);
   try {
+    sendGrid.setApiKey(SENDGRID_API_KEY);
     const findUser = await User.findOne({ email });
     if (findUser) {
       throw new Conflict("Email in use");
@@ -26,8 +31,23 @@ const register = async (req, res, next) => {
     const user = await User.create({
       email,
       password: hashedPassword,
+      verificationToken,
       avatarURL: gravatar.url(email),
+      verify: false,
     });
+
+    const sendMail = {
+      from: "testyuliat@gmail.com",
+      to: email,
+      subject: "Please confirm your email address",
+      text: "Confirm your email addres",
+      html: `<strong>Confirm your account by following this link
+                <a href = "http://localhost:3000/api/users/verify/${verificationToken}">Please click on this link to confirm your email</a>
+              </strong>`,
+    };
+
+    const response = await sendGrid.send(sendMail);
+    console.log(response);
 
     res.status(201).json({
       user: {
@@ -108,10 +128,69 @@ const updateAvatar = async (req, res, next) => {
   }
 };
 
+const verifyEmail = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  console.log(verificationToken);
+  const user = await User.findOne({
+    verificationToken: verificationToken,
+  });
+
+  if (!user) {
+    throw BadRequest("Verify token is not valid!");
+  }
+
+  await User.findByIdAndUpdate(user._id, {
+    verify: true,
+    verificationToken: null,
+  });
+
+  return res.status(200).json({
+    message: "Verification successful",
+  });
+};
+
+const resendVerificationEmail = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({
+      email,
+    });
+    sendGrid.setApiKey(SENDGRID_API_KEY);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "Please indicate correct email address" });
+    } else if (user.verify === true) {
+      throw BadRequest("Verification has already been passed");
+    }
+    const sendMail = {
+      from: "rihter.yan@gmail.com",
+      to: email,
+      subject: "Please confirm your email address",
+      text: "Confirm your email address12312412",
+      html: `<strong>
+              Confirm your account by following this link
+              <a href = "http://localhost:3000/api/users/verify/${user.verificationToken}">
+                Please click on this link to confirm your email
+              </a>
+              </strong>`,
+    };
+
+    const response = await sendGrid.send(sendMail);
+    console.log(response);
+    return res.status(200).json({ message: "Verification email sent" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
   currentUser,
   updateAvatar,
+  verifyEmail,
+  resendVerificationEmail,
 };
